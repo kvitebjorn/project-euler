@@ -1,10 +1,6 @@
 module Main where
 
-import Data.List (transpose)
 import Data.Char(digitToInt)
-
-rotl :: [[x]] -> [[x]]
-rotl = transpose . map reverse
 
 slide :: String -> Int -> Integer -> Integer
 slide s n p
