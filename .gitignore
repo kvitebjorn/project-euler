@@ -3,3 +3,4 @@
 # except haskell source files
 !*.hs
 !*.txt
+!*.md
