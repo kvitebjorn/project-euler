@@ -38,7 +38,7 @@ rotateOnce (x:xs) = xs ++ [x]
 
 rotations :: [a] -> [[a]] -> [[a]]
 rotations s rs
-    | (length s) == (length rs) = rs
+    | length s == length rs = rs
     | otherwise = rotations (rotateOnce s) (s : rs)
 
 getCircularPrimes :: Ord a => Set [a] -> Set [a] -> Set [a]
