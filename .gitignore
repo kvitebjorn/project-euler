@@ -4,3 +4,5 @@
 !*.hs
 !*.txt
 !*.md
+!*.cl
+!*.lisp
