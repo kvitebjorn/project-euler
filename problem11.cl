@@ -5,7 +5,8 @@
 
 (defpackage :problem11
   (:import-from :listopia #:maximum)
-  (:use :cl :magicl :lparallel :lparallel.queue :bt-semaphore))
+  (:import-from :magicl #:from-list #:tref)
+  (:use :cl :lparallel :lparallel.queue :bt-semaphore))
 
 (in-package :problem11)
 
@@ -45,9 +46,20 @@
   "TODO"
   1)
 
-(defun diag (grid)
-  "TODO"
-  '())
+(defun diags (grid)
+  "TODO: return one big vertical matrix, padded with zeros maybe using magicl:block-diag"
+  (let* ((max-col 20)
+	(max-row 20)
+	(fdiag (make-list (+ max-row max-col -1) :initial-element '()))
+	(bdiag (make-list (length fdiag) :initial-element '()))
+	(min-bdiag -19))
+    (dotimes (x max-col)
+      (dotimes (y max-row)
+	(push (magicl:tref grid x y) (nth (+ x y) fdiag))
+	(push (magicl:tref grid x y) (nth (- x y min-bdiag) bdiag))))
+    (format t "~a~%" fdiag)
+    (format t "~a~%" bdiag)
+    '(fdiag bdiag)))
 
 (defun max-product ()
   "Get the max product of sliding by 4 in parallel by
@@ -64,10 +76,7 @@
                              (slide (magicl:transpose g)))
                  *grid*)
     (submit-task channel (lambda (g)
-                             (slide (diag g)))
-                 *grid*)
-    (submit-task channel (lambda (g)
-                             (slide (diag (magicl:transpose g))))
+                             (slide (diags g)))
                  *grid*)
     (dotimes (i 4 res)
       (push (receive-result channel) res))
