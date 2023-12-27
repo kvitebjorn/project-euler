@@ -40,12 +40,27 @@
      01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48)
    '(20 20)))
 
-(defun slide (grid)
-  "TODO: only slide straight across col-wise, row by row"
-  1)
-
 (defun maximum (l)
   (reduce #'max l))
+
+(defun slide-row (row)
+  (let ((cols (- (magicl:ncols row) 4))
+	(products '()))
+    (dotimes (i cols)
+      (let ((fst (magicl:tref row 0 i))
+	    (snd (magicl:tref row 0 (+ 1 i)))
+	    (trd (magicl:tref row 0 (+ 2 i)))
+	    (fth (magicl:tref row 0 (+ 3 i))))
+	(push (* fst snd trd fth) products)))
+    (maximum products)))
+
+(defun slide-matrix (grid)
+  (let ((rows (- (magicl:nrows grid) 1))
+	(cols (magicl:ncols grid))
+	(products '()))
+    (dotimes (i rows)
+      (push (slide-row (magicl:slice grid (list i 0) (list (+ 1 i) cols))) products))
+    (maximum products)))
 
 (defun pad-right (l)
   (reduce #'cons l
@@ -77,13 +92,13 @@
   (let ((channel (make-channel))
         (res '()))
     (submit-task channel (lambda (g)
-                             (slide g))
+                             (slide-matrix g))
                  *grid*)
     (submit-task channel (lambda (g)
-                             (slide (magicl:transpose g)))
+                             (slide-matrix (magicl:transpose g)))
                  *grid*)
     (submit-task channel (lambda (g)
-                             (slide (diags g)))
+                             (slide-matrix (diags g)))
                  *grid*)
     (dotimes (i 3 res)
       (push (receive-result channel) res))
