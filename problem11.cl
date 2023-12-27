@@ -1,11 +1,9 @@
 (require 'bt-semaphore)
 (require 'lparallel)
 (require 'magicl)
-(require 'listopia)
 
 (defpackage :problem11
-  (:import-from :listopia #:maximum)
-  (:import-from :magicl #:from-list #:tref)
+  (:import-from :magicl #:from-list #:tref #:vstack)
   (:use :cl :lparallel :lparallel.queue :bt-semaphore))
 
 (in-package :problem11)
@@ -43,11 +41,19 @@
    '(20 20)))
 
 (defun slide (grid)
-  "TODO"
+  "TODO: only slide straight across col-wise, row by row"
   1)
 
+(defun maximum (l)
+  (reduce #'max l))
+
+(defun pad-right (l)
+  (reduce #'cons l
+	  :initial-value (make-list (- 20 (length l)) :initial-element 0)
+	  :from-end t))
+  
 (defun diags (grid)
-  "TODO: return one big vertical matrix, padded with zeros maybe using magicl:block-diag"
+  "Returns one matrix of all diagonals of grid, vertically stacked"
   (let* ((max-col 20)
 	(max-row 20)
 	(fdiag (make-list (+ max-row max-col -1) :initial-element '()))
@@ -57,16 +63,17 @@
       (dotimes (y max-row)
 	(push (magicl:tref grid x y) (nth (+ x y) fdiag))
 	(push (magicl:tref grid x y) (nth (- x y min-bdiag) bdiag))))
-    (format t "~a~%" fdiag)
-    (format t "~a~%" bdiag)
-    '(fdiag bdiag)))
+    (let* ((fdiag-padded (mapcar #'pad-right fdiag))
+	  (bdiag-padded (mapcar #'pad-right bdiag))
+	  (fdiag-tensor (magicl:from-list fdiag-padded '(39 20)))
+	  (bdiag-tensor (magicl:from-list bdiag-padded '(39 20))))
+      (magicl:vstack (list fdiag-tensor bdiag-tensor)))))
 
 (defun max-product ()
   "Get the max product of sliding by 4 in parallel by
    1. row
    2. col
-   3. l-r diag
-   4. r-l diag"
+   3. l-r diags + r-l diags"
   (let ((channel (make-channel))
         (res '()))
     (submit-task channel (lambda (g)
@@ -78,7 +85,7 @@
     (submit-task channel (lambda (g)
                              (slide (diags g)))
                  *grid*)
-    (dotimes (i 4 res)
+    (dotimes (i 3 res)
       (push (receive-result channel) res))
     (maximum res)))
 
