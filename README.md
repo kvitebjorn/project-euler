@@ -1,1 +1,1 @@
-# projecteuler
+# project-euler
