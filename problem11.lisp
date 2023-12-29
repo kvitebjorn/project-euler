@@ -1,6 +1,4 @@
-(require 'bt-semaphore)
-(require 'lparallel)
-(require 'magicl)
+(require "asdf")
 
 (defpackage :problem11
   (:import-from :magicl #:from-list #:tref #:vstack)

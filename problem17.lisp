@@ -1,3 +1,10 @@
+(require "asdf")
+
+(defpackage :problem17
+  (:use :cl))
+
+(in-package :problem17)
+
 (defun count-number-letters (nums)
   (reduce '+
     (mapcar #'(lambda (x) (length (remove #\ (remove #\- (format nil "~r" x))))) nums)))

@@ -1,8 +1,9 @@
 # ignore all kind of files
 *
-# except haskell source files
+# except source files
 !*.hs
 !*.txt
 !*.md
 !*.cl
 !*.lisp
+|*.asd
