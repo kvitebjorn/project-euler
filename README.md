@@ -1,6 +1,6 @@
 # project-euler
 
-(asdf:load-system :project-euler)
+`(asdf:load-system :project-euler)` is enough to run the solutions.
 
-after compiling with sbcl, for faster solution times...
-(load "problem11.fasl")
+optionally, compile the solution file with `sbcl` then load for faster runtimes, for example
+`(load "problem11.fasl")`
